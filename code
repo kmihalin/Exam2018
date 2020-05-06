@@ -1,0 +1,87 @@
+const int potentiometer = A0; //declare the constants
+const int swtich = 5;
+const int element = 6;
+const int thermistor = A1;
+const int fan = 7;
+const int LED1 = 8
+const int LED2 = 9;
+const int LED3 = 10;
+
+void setup(){
+pinMode(switch, INPUT); //declare the inputs/outputs
+pinMode(element, OUTPUT);
+pinMode(fan, OUTPUT);
+pinMode(LED1, OUTPUT);
+pinMode(LED2, OUTPUT);
+pinMode(LED3, OUTPUT);
+Serial.begin(9600); //begin serial communication
+}
+
+int setpoint; //stores setpoint temp
+int mode; //stores regular or economy mode
+int temp; //stores thermistor temp
+
+void loop(){
+setpoint=analogRead(potentiometer); //read the potentiometer to get setpoint temp
+setpoint=map(setpoint, 0, 1023, 15, 35); //map the setpoint temp
+mode=digitalRead(switch); //read the switch
+temp=analogRead(thermistor); //read the thermistor
+temp=map(temp, 20, 385, 15, 35); //map the thermistor temps
+
+if(mode==HIGH){ //if in regular mode
+  if(setpoint-temp>=2){ //if the temp is 2 degrees less
+  digitalWrite(element, HIGH); //element on
+  digitalWrite(fan, LOW); //everthing else off
+  digitalWrite(LED3, LOW);
+  digitalWrite(LED2, LOW);
+  digitalWrite(LED1, HIGH); //heating led on
+  }
+  else if(temp-setpoint>=2){ // if the temp is 2 degrees more
+  digitalWrite(fan, HIGH); //fan on
+  digitalWrite(element, LOW); //everything else off
+  digitalWrite(LED3, LOW);
+  digitalWrite(LED2, HIGH); //cooling led on
+  digitalWrite(LED1, LOW);
+  }
+  else{ //otherwise everything off except within range LED
+  digitalWrite(LED3, HIGH);
+  digitalWrite(LED2, LOW);
+  digitalWrite(LED1, LOW);
+  digitalWrite(fan, LOW);
+  digitalWrite(element, LOW);
+  }
+}
+
+else if(mode==LOW){ //if in economy mode
+  if(setpoint-temp>=5){ //if temp is 5 degrees less
+  digitalWrite(element, HIGH); //element on
+  digitalWrite(fan, LOW); //everything else off
+  digitalWrite(LED3, LOW);
+  digitalWrite(LED2, LOW);
+  digitalWrite(LED1, HIGH); //heating LED on
+  }
+  else if(temp-setpoint>=5){ //if temp is 5 degrees more
+  digitalWrite(fan, HIGH); //fan on
+  digitalWrite(element, LOW); //everything else off
+  digitalWrite(LED3, LOW);
+  digitalWrite(LED2, HIGH); //cooling LED on
+  digitalWrite(LED1, LOW);
+  }
+  else{ //otherwise everything off except within range LED
+  digitalWrite(LED3, HIGH);
+  digitalWrite(LED2, LOW);
+  digitalWrite(LED1, LOW);
+  digitalWrite(fan, LOW);
+  digitalWrite(element, LOW);
+  }
+}
+}
+
+else{ //otherwise everything off
+digitalWrite(fan, LOW);
+digitalWrite(element, LOW);
+digitalWrite(LED1, LOW);
+digitalWrite(LED2, LOW);
+digitalWrite(LED3, LOW);
+}
+}
